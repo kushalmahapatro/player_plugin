@@ -2,18 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="81277245-a09d-4c66-8d97-93276755f94c" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.dart_tool/package_config.json" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/package_config.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.flutter-plugins-dependencies" beforeDir="false" afterPath="$PROJECT_DIR$/.flutter-plugins-dependencies" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.packages" beforeDir="false" afterPath="$PROJECT_DIR$/.packages" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/src/main/java/com/kushal/player_plugin/PlayerPlugin.java" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/java/com/kushal/player_plugin/PlayerPlugin.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/player/model/player_styling.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/player/model/player_styling.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/player/model/secured_video_content.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/player/model/secured_video_content.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/player/screen/player.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/player/screen/player.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/player_plugin.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/player_plugin.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -128,7 +118,14 @@
       <option name="project" value="LOCAL" />
       <updated>1598806612060</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Player Plugin v 0.0.4 with fixes">
+      <created>1598815807602</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1598815807602</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -146,17 +143,18 @@
     <MESSAGE value="Player Plugin v 0.0.1" />
     <MESSAGE value="Player Plugin v 0.0.2 with video indicator controls" />
     <MESSAGE value="Player Plugin v 0.0.3 with video styling attribute" />
-    <option name="LAST_COMMIT_MESSAGE" value="Player Plugin v 0.0.3 with video styling attribute" />
+    <MESSAGE value="Player Plugin v 0.0.4 with fixes" />
+    <option name="LAST_COMMIT_MESSAGE" value="Player Plugin v 0.0.4 with fixes" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="571" y="99" key="CommitChangelistDialog2" timestamp="1598806611929">
+    <state x="571" y="99" key="CommitChangelistDialog2" timestamp="1598815807240">
       <screen x="0" y="23" width="1920" height="1057" />
     </state>
-    <state x="571" y="99" key="CommitChangelistDialog2/0.23.1920.1057@0.23.1920.1057" timestamp="1598806611929" />
-    <state x="185" y="65" width="1536" height="845" key="DiffContextDialog" timestamp="1598806942090">
+    <state x="571" y="99" key="CommitChangelistDialog2/0.23.1920.1057@0.23.1920.1057" timestamp="1598815807240" />
+    <state x="185" y="65" width="1536" height="845" key="DiffContextDialog" timestamp="1598816019120">
       <screen x="0" y="23" width="1920" height="1057" />
     </state>
-    <state x="185" y="65" width="1536" height="845" key="DiffContextDialog/0.23.1920.1057@0.23.1920.1057" timestamp="1598806942090" />
+    <state x="185" y="65" width="1536" height="845" key="DiffContextDialog/0.23.1920.1057@0.23.1920.1057" timestamp="1598816019120" />
     <state x="518" y="416" key="GitRewordDialog" timestamp="1598802554241">
       <screen x="0" y="23" width="1920" height="1057" />
     </state>
@@ -165,31 +163,31 @@
       <screen x="0" y="23" width="1920" height="1057" />
     </state>
     <state x="452" y="155" key="SettingsEditor/0.23.1920.1057@0.23.1920.1057" timestamp="1598777034260" />
-    <state x="773" y="210" key="VCS.ChangeListViewerDialog" timestamp="1598802619344">
+    <state x="773" y="210" key="VCS.ChangeListViewerDialog" timestamp="1598815981932">
       <screen x="0" y="23" width="1920" height="1057" />
     </state>
-    <state x="773" y="210" key="VCS.ChangeListViewerDialog/0.23.1920.1057@0.23.1920.1057" timestamp="1598802619344" />
-    <state x="552" y="239" key="Vcs.Push.Dialog.v2" timestamp="1598806662232">
+    <state x="773" y="210" key="VCS.ChangeListViewerDialog/0.23.1920.1057@0.23.1920.1057" timestamp="1598815981932" />
+    <state x="552" y="239" key="Vcs.Push.Dialog.v2" timestamp="1598815842953">
       <screen x="0" y="23" width="1920" height="1057" />
     </state>
-    <state x="552" y="239" key="Vcs.Push.Dialog.v2/0.23.1920.1057@0.23.1920.1057" timestamp="1598806662232" />
+    <state x="552" y="239" key="Vcs.Push.Dialog.v2/0.23.1920.1057@0.23.1920.1057" timestamp="1598815842953" />
     <state x="612" y="324" width="852" height="486" key="find.popup" timestamp="1598815411276">
       <screen x="0" y="23" width="1920" height="1057" />
     </state>
     <state x="612" y="308" width="852" height="486" key="find.popup/0.0.1920.1080@0.0.1920.1080" timestamp="1598772593000" />
     <state x="612" y="324" width="852" height="486" key="find.popup/0.23.1920.1057@0.23.1920.1057" timestamp="1598815411276" />
-    <state x="728" y="297" key="git4idea.merge.GitMergeDialog" timestamp="1598777876603">
+    <state x="728" y="297" key="git4idea.merge.GitMergeDialog" timestamp="1598815921887">
       <screen x="0" y="23" width="1920" height="1057" />
     </state>
-    <state x="728" y="297" key="git4idea.merge.GitMergeDialog/0.23.1920.1057@0.23.1920.1057" timestamp="1598777876603" />
-    <state x="742" y="351" key="git4idea.ui.GitTagDialog" timestamp="1598806645541">
+    <state x="728" y="297" key="git4idea.merge.GitMergeDialog/0.23.1920.1057@0.23.1920.1057" timestamp="1598815921887" />
+    <state x="742" y="351" key="git4idea.ui.GitTagDialog" timestamp="1598815988417">
       <screen x="0" y="23" width="1920" height="1057" />
     </state>
-    <state x="742" y="351" key="git4idea.ui.GitTagDialog/0.23.1920.1057@0.23.1920.1057" timestamp="1598806645541" />
-    <state x="744" y="386" key="zielu.gittoolbox.ui.GitPushTagsDialog" timestamp="1598806673449">
+    <state x="742" y="351" key="git4idea.ui.GitTagDialog/0.23.1920.1057@0.23.1920.1057" timestamp="1598815988417" />
+    <state x="744" y="386" key="zielu.gittoolbox.ui.GitPushTagsDialog" timestamp="1598816013936">
       <screen x="0" y="23" width="1920" height="1057" />
     </state>
-    <state x="744" y="386" key="zielu.gittoolbox.ui.GitPushTagsDialog/0.23.1920.1057@0.23.1920.1057" timestamp="1598806673449" />
+    <state x="744" y="386" key="zielu.gittoolbox.ui.GitPushTagsDialog/0.23.1920.1057@0.23.1920.1057" timestamp="1598816013936" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
