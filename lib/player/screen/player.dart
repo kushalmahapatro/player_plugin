@@ -7,6 +7,7 @@ import 'package:player_plugin/subtitle/subtitle_controller.dart';
 import 'package:player_plugin/subtitle/subtitle_text_view.dart';
 
 
+// ignore: must_be_immutable
 class Player extends StatefulWidget {
   Sample sampleVideo;
   bool showBackButton;
@@ -60,12 +61,6 @@ class PlayerState extends State<Player> {
   List<AudioValues> audioValues = new List();
   List<SubtitleValues> subtitleValues = [
     SubtitleValues("", "OFF", SubtitleType.VTT),
-//    SubtitleValues(
-//        "https://duoidi6ujfbv.cloudfront.net/media/115/subtitles/5ccb556be8e7f.vtt",
-//        "Czech VTT",
-//        SubtitleType.VTT),
-//    SubtitleValues("http://www.storiesinflight.com/js_videosub/jellies.srt",
-//        "English SRT", SubtitleType.SRT)
   ];
   PlaybackValues selectedPlayback;
   ResolutionValues selectedResolution;
@@ -246,6 +241,11 @@ class PlayerState extends State<Player> {
     showResumePopup = false;
     controller = widget.controller;
     selectedPlayback = new PlaybackValues("Normal", 1.00);
+    if(widget.sampleVideo.subtitles != null ){
+      for (int i= 0 ; i< widget.sampleVideo.subtitles.length ; i++){
+        subtitleValues.add(widget.sampleVideo.subtitles[i]);
+      }
+    }
     _initialize();
   }
 
@@ -1106,6 +1106,7 @@ class Sample {
   final String drm_license_url;
   final String ad_tag_uri;
   final List<String> playlist;
+  final List<SubtitleValues> subtitles;
   final String spherical_stereo_mode;
   final int playedLength;
   final String key;
@@ -1113,8 +1114,13 @@ class Sample {
 
   factory Sample.fromJson(Map<String, dynamic> parsedJson) {
     List<String> playlistfiles = null;
+    List<SubtitleValues> subtitlesFiles = null;
     if (parsedJson['playlist'] != null) {
       playlistfiles = parsePlayLists(parsedJson['playlist']);
+    }
+
+    if (parsedJson['subtitles'] != null) {
+      subtitlesFiles = parseSubtitles(parsedJson['subtitles']);
     }
 
     return Sample(
@@ -1126,6 +1132,7 @@ class Sample {
         ad_tag_uri: parsedJson['ad_tag_uri'],
         spherical_stereo_mode: parsedJson['spherical_stereo_mode'],
         playlist: playlistfiles,
+        subtitles: subtitlesFiles ,
         playedLength: 0,
         key: parsedJson['key'],
         keyId: parsedJson['keyId']);
@@ -1139,14 +1146,15 @@ class Sample {
 
   Sample(
       {@required this.name,
-        this.uri,
-        this.extension,
-        this.drm_scheme,
-        this.drm_license_url,
-        this.ad_tag_uri,
-        this.spherical_stereo_mode,
-        this.playlist,
-        this.playedLength,
+        @required this.uri,
+        this.extension  = "",
+        this.drm_scheme = 'widevine',
+        this.drm_license_url = "",
+        this.ad_tag_uri = "",
+        this.spherical_stereo_mode = "",
+        this.playlist = const [""],
+        this.subtitles,
+        this.playedLength= 0,
         this.key,
         this.keyId});
 
@@ -1162,6 +1170,10 @@ class Sample {
     return parsedresponseBody
         .map<String>((json) => playListfromJson(json))
         .toList();
+  }
+
+  static List<SubtitleValues> parseSubtitles (body){
+    return body.map<SubtitleValues>((value) => value).toList();
   }
 
   static String playListfromJson(json) {

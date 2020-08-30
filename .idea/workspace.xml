@@ -2,18 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="81277245-a09d-4c66-8d97-93276755f94c" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/lib/player/screen/player.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/subtitle/model/style/subtitle_border_style.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/subtitle/model/style/subtitle_position.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/subtitle/model/style/subtitle_style.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/subtitle/model/subtitle.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/subtitle/model/subtitles.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/subtitle/subtitle_controller.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/subtitle/subtitle_text_view.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/subtitle/subtitle_wrapper_package.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.packages" beforeDir="false" afterPath="$PROJECT_DIR$/.packages" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/player/screen/player.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/player/screen/player.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,6 +45,9 @@
       </RecentBranches>
     </option>
   </component>
+  <component name="GithubDefaultAccount">
+    <option name="defaultAccountId" value="f5485e06-c7c2-4f5a-b482-29b349ceeb34" />
+  </component>
   <component name="ProjectId" id="1goDBOBosct13gWkVMXOqpQo4Vv" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="2" id="Add" />
@@ -73,11 +66,12 @@
     <property name="project.structure.last.edited" value="SDK Location" />
     <property name="project.structure.proportion" value="0.17" />
     <property name="project.structure.side.proportion" value="0.0" />
-    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="settings.editor.selected.configurable" value="settings.github" />
     <property name="show.migrate.to.gradle.popup" value="false" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/lib/player/screen/model" />
       <recent name="$PROJECT_DIR$/lib/player/screen" />
       <recent name="$PROJECT_DIR$/lib/player" />
     </key>
@@ -100,6 +94,10 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
+    <state x="452" y="155" key="SettingsEditor" timestamp="1598773253749">
+      <screen x="0" y="23" width="1920" height="1057" />
+    </state>
+    <state x="452" y="155" key="SettingsEditor/0.23.1920.1057@0.23.1920.1057" timestamp="1598773253749" />
     <state x="612" y="308" width="852" height="486" key="find.popup" timestamp="1598772593000">
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
