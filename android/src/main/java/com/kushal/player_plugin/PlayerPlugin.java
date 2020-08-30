@@ -309,15 +309,16 @@ public class PlayerPlugin implements MethodCallHandler {
                 @Override
                 public void onPlayerStateChanged(final boolean playWhenReady, final int playbackState) {
                     if (playbackState == Player.STATE_BUFFERING) {
+                        startBuffering();
                         sendBufferingUpdate();
                     } else if (playbackState == Player.STATE_READY) {
+                        endBuffering();
                         if (!isInitialized) {
                             isInitialized = true;
                             getDefaultAudioAndVideo(context);
-                            // sendInitialized(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
-
                         }
                     } else if (playbackState == Player.STATE_ENDED) {
+                        endBuffering();
                         Map<String, Object> event = new HashMap<>();
                         event.put("event", "completed");
                         eventSink.success(event);
@@ -425,6 +426,20 @@ public class PlayerPlugin implements MethodCallHandler {
             sendInitialized(AudioNew, ResolutionChange, SubtitleNew);
         }
 
+        private void startBuffering(){
+            Map<String, Object> event = new HashMap<>();
+            event.put("event", "bufferingStart");
+            event.put("values", true);
+            eventSink.success(event);
+        }
+
+        private void endBuffering()
+        {
+            Map<String, Object> event = new HashMap<>();
+            event.put("event", "bufferingEnd");
+            event.put("values", false);
+            eventSink.success(event);
+        }
         private void sendBufferingUpdate() {
             Map<String, Object> event = new HashMap<>();
             event.put("event", "bufferingUpdate");
