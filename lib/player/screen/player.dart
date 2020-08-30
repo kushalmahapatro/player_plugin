@@ -253,7 +253,6 @@ class PlayerState extends State<Player> {
   Widget build(BuildContext context) {
     controller.addListener(_controllerListener);
     double volume;
-    //    Screen.keepOn(true);
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
     fullScreenRatio = screenWidth / screenHeight;
@@ -281,6 +280,7 @@ class PlayerState extends State<Player> {
 
     Widget progressBar(val) {
       if (val != null && val > 0.0 && val < 1.0) {
+        return VideoProgressIndicator(controller, allowScrubbing: true,);
         return Slider(
           value: val,
           min: 0.0,
