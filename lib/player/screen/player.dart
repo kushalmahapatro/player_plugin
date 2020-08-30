@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:player_plugin/player/model/player_styling.dart';
 import 'package:player_plugin/player_plugin.dart';
 import 'package:player_plugin/subtitle/model/style/subtitle_style.dart';
 import 'package:player_plugin/subtitle/subtitle_controller.dart';
@@ -19,6 +20,7 @@ class Player extends StatefulWidget {
   ValueChanged<bool> videoCompleted;
   ValueChanged<int> lastPlaybackPosition;
   bool showResumePopup;
+  PlayerStyling playerStyling;
 
   Player(
       {Key key,
@@ -31,6 +33,7 @@ class Player extends StatefulWidget {
         this.lastPlaybackPosition,
         this.videoCompleted,
         this.mediaChanged,
+        this.playerStyling,
         this.showResumePopup = true})
       : super(key: key);
 
@@ -42,7 +45,6 @@ class PlayerState extends State<Player> {
   VideoPlayerController controller;
   bool _isPlaying = false;
   bool _showController = false;
-  bool _isControllerVisible;
   Timer _timer;
   double actualRatio, fullScreenRatio, aspectRatio, prevVolume = 0.0;
   bool _disposed = false, orientationChange = false, showResumePopup;
@@ -75,7 +77,6 @@ class PlayerState extends State<Player> {
   hideControls() {
     setState(() {
       _showController = false;
-      _isControllerVisible = false;
     });
   }
 
@@ -83,7 +84,6 @@ class PlayerState extends State<Player> {
     bool toHide = hide ?? true;
     setState(() {
       _showController = true;
-      _isControllerVisible = true;
       if (_timer != null) _timer.cancel();
     });
     if (toHide) {
@@ -280,41 +280,63 @@ class PlayerState extends State<Player> {
 
     Widget progressBar(val) {
       if (val != null && val > 0.0 && val < 1.0) {
-        return VideoProgressIndicator(controller, allowScrubbing: true,);
-        return Slider(
-          value: val,
-          min: 0.0,
-          max: 1.0,
-          activeColor: Colors.green,
-          inactiveColor: Colors.white,
-          onChanged: (double value) {
-            setState(() {
+        final int duration = controller.value.duration.inMilliseconds;
+        int maxBuffering = 0;
+        for (DurationRange range in controller.value.buffered) {
+          final int end = range.end.inMilliseconds;
+          if (end > maxBuffering) {
+            maxBuffering = end;
+          }
+        }
+        return Stack(
+        fit: StackFit.passthrough,
+        children: <Widget>[
+          LinearProgressIndicator(
+            value: maxBuffering / duration,
+            valueColor: AlwaysStoppedAnimation<Color>(widget.playerStyling.progressColors.bufferedColor),
+            backgroundColor: widget.playerStyling.progressColors.backgroundColor,
+          ),
+          Slider(
+            value: val,
+            min: 0.0,
+            max: 1.0,
+            activeColor: widget.playerStyling.progressColors.playedColor,
+            inactiveColor: Colors.transparent,
+            onChanged: (double value) {
+              setState(() {
+                if (!controller.value.initialized) {
+                  return;
+                }
+                playerPosition = (playerDuration * value).round();
+                controller.seekTo(Duration(milliseconds: playerPosition));
+                showControls();
+              });
+            },
+            onChangeStart: (double value) {
+              showControls(hide: false);
+              _stopwatch.stop();
               if (!controller.value.initialized) {
                 return;
               }
-              playerPosition = (playerDuration * value).round();
-              controller.seekTo(Duration(milliseconds: playerPosition));
+            },
+            onChangeEnd: (double value) {
+              if (!_stopwatch.isRunning) {
+                _stopwatch.start();
+              }
               showControls();
-            });
-          },
-          onChangeStart: (double value) {
-            showControls(hide: false);
-            _stopwatch.stop();
-            if (!controller.value.initialized) {
-              return;
-            }
-          },
-          onChangeEnd: (double value) {
-            if (!_stopwatch.isRunning) {
-              _stopwatch.start();
-            }
-            showControls();
-          },
-        );
+            },
+          )
+        ],
+      );
+
       } else {
-        return Container(
-          width: 0,
-          height: 0,
+        return Slider(
+          value: 0,
+          min: 0.0,
+          max: 1.0,
+          onChanged: (value){},
+          activeColor: widget.playerStyling.progressColors.playedColor,
+          inactiveColor: Colors.white.withOpacity(0.1),
         );
       }
     }
@@ -611,7 +633,6 @@ class PlayerState extends State<Player> {
         }
       }
       volume = controller.value.volume;
-      _isControllerVisible = true;
       return GestureDetector(
         child: Container(
             color: Colors.black.withOpacity(0.3),
@@ -759,8 +780,8 @@ class PlayerState extends State<Player> {
                                             value: controller.value.volume,
                                             min: 0.0,
                                             max: 1.0,
-                                            activeColor: Colors.green,
-                                            inactiveColor: Colors.white,
+                                            activeColor: widget.playerStyling.volumeColors.activeColor,
+                                            inactiveColor: widget.playerStyling.volumeColors.backgroundColor,
                                             onChanged: (double value) {
                                               setState(() {
                                                 if (!controller.value.initialized) {

@@ -11,12 +11,6 @@ import 'package:player_plugin/player/model/secured_video_content.dart';
 class PlayerPlugin {
   static const MethodChannel _channel =
       const MethodChannel('flutter.io/videoPlayer');
-
-//  static Future<String> get platformVersion async {
-//    final String version = await _channel.invokeMethod('getPlatformVersion');
-//    return version;
-//  }
-
 }
 
 class DurationRange {
@@ -150,7 +144,7 @@ class VideoPlayerValue {
         'isBuffering: $isBuffering'
         'volume: $volume, '
         'speed: $speed, '
-        'resolutiosn: [${resolutions.join(', ')}], '
+        'resolutions: [${resolutions.join(', ')}], '
         'audios: [${audios.join(', ')}], '
         'subtitles: [${subtitles.join(', ')}], '
         'errorDescription: $errorDescription,'
@@ -296,9 +290,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
             subtitles: jsonDecode(map['subtitles']),
             audios: jsonDecode(map['audios']),
           );
-          // print("Resolutons : ${map['resolutions']}");
-          // print("Audios : ${map['audios']}");
-          // print("Subtitles : ${map['subtitles']}");
           initializingCompleter.complete(null);
           _applyLooping();
           _applyVolume();
@@ -349,9 +340,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         _isDisposed = true;
         _timer?.cancel();
         await _eventSubscription?.cancel();
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
         await PlayerPlugin._channel.invokeMethod(
           'dispose',
           <String, dynamic>{'textureId': _textureId},
@@ -387,9 +375,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return;
     }
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
     PlayerPlugin._channel.invokeMethod(
       'setLooping',
       <String, dynamic>{'textureId': _textureId, 'looping': value.isLooping},
@@ -401,9 +386,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       return;
     }
     if (value.isPlaying) {
-      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
       await PlayerPlugin._channel.invokeMethod(
         'play',
         <String, dynamic>{'textureId': _textureId},
@@ -423,9 +405,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       );
     } else {
       _timer?.cancel();
-      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
       await PlayerPlugin._channel.invokeMethod(
         'pause',
         <String, dynamic>{'textureId': _textureId},
@@ -435,9 +414,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
   Future<void> _stop() async {
     _timer?.cancel();
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
     await PlayerPlugin._channel.invokeMethod(
       'stop',
       <String, dynamic>{'textureId': _textureId},
@@ -448,9 +424,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return;
     }
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
     await PlayerPlugin._channel.invokeMethod(
       'setVolume',
       <String, dynamic>{'textureId': _textureId, 'volume': value.volume},
@@ -461,9 +434,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return;
     }
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
     await PlayerPlugin._channel.invokeMethod(
       'speed',
       <String, dynamic>{'textureId': _textureId, 'speed': value.speed},
@@ -474,9 +444,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return;
     }
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
     await PlayerPlugin._channel.invokeMethod(
       'resolution',
       <String, dynamic>{
@@ -492,9 +459,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return;
     }
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
     await PlayerPlugin._channel.invokeMethod(
       'audio',
       <String, dynamic>{'textureId': _textureId, 'code': code},
@@ -507,9 +471,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       return null;
     }
     return Duration(
-      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
       milliseconds: await PlayerPlugin._channel.invokeMethod(
         'position',
         <String, dynamic>{'textureId': _textureId},
@@ -526,9 +487,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     } else if (moment < const Duration()) {
       moment = const Duration();
     }
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
     await PlayerPlugin._channel.invokeMethod('seekTo', <String, dynamic>{
       'textureId': _textureId,
       'location': moment.inMilliseconds,

@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="81277245-a09d-4c66-8d97-93276755f94c" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/lib/player/model/player_styling.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/player/screen/player.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/player/screen/player.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/player_plugin.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/player_plugin.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -18,6 +20,12 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="PUSH_TAGS">
+      <GitPushTagMode>
+        <option name="argument" value="--follow-tags" />
+        <option name="title" value="Current Branch" />
+      </GitPushTagMode>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitToolBoxStore">
@@ -46,7 +54,7 @@
     </option>
   </component>
   <component name="GithubDefaultAccount">
-    <option name="defaultAccountId" value="f5485e06-c7c2-4f5a-b482-29b349ceeb34" />
+    <option name="defaultAccountId" value="1f3b4468-1994-4d28-9a82-9722c1ad0611" />
   </component>
   <component name="ProjectId" id="1goDBOBosct13gWkVMXOqpQo4Vv" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
@@ -91,17 +99,81 @@
       <option name="presentableId" value="Default" />
       <updated>1598771914344</updated>
     </task>
+    <task id="LOCAL-00001" summary="Player Plugin v 0.0.1">
+      <created>1598777836574</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1598777836574</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Player Plugin v 0.0.2 with video indicator controls">
+      <created>1598802354063</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1598802354064</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Player Plugin v 0.0.1" />
+    <MESSAGE value="Player Plugin v 0.0.2 with video indicator controls" />
+    <option name="LAST_COMMIT_MESSAGE" value="Player Plugin v 0.0.2 with video indicator controls" />
+  </component>
   <component name="WindowStateProjectService">
-    <state x="452" y="155" key="SettingsEditor" timestamp="1598773253749">
+    <state x="571" y="99" key="CommitChangelistDialog2" timestamp="1598802353807">
       <screen x="0" y="23" width="1920" height="1057" />
     </state>
-    <state x="452" y="155" key="SettingsEditor/0.23.1920.1057@0.23.1920.1057" timestamp="1598773253749" />
-    <state x="612" y="308" width="852" height="486" key="find.popup" timestamp="1598772593000">
-      <screen x="0" y="0" width="1920" height="1080" />
+    <state x="571" y="99" key="CommitChangelistDialog2/0.23.1920.1057@0.23.1920.1057" timestamp="1598802353807" />
+    <state x="185" y="65" width="1536" height="845" key="DiffContextDialog" timestamp="1598802637322">
+      <screen x="0" y="23" width="1920" height="1057" />
+    </state>
+    <state x="185" y="65" width="1536" height="845" key="DiffContextDialog/0.23.1920.1057@0.23.1920.1057" timestamp="1598802637322" />
+    <state x="518" y="416" key="GitRewordDialog" timestamp="1598802554241">
+      <screen x="0" y="23" width="1920" height="1057" />
+    </state>
+    <state x="518" y="416" key="GitRewordDialog/0.23.1920.1057@0.23.1920.1057" timestamp="1598802554241" />
+    <state x="452" y="155" key="SettingsEditor" timestamp="1598777034260">
+      <screen x="0" y="23" width="1920" height="1057" />
+    </state>
+    <state x="452" y="155" key="SettingsEditor/0.23.1920.1057@0.23.1920.1057" timestamp="1598777034260" />
+    <state x="773" y="210" key="VCS.ChangeListViewerDialog" timestamp="1598802619344">
+      <screen x="0" y="23" width="1920" height="1057" />
+    </state>
+    <state x="773" y="210" key="VCS.ChangeListViewerDialog/0.23.1920.1057@0.23.1920.1057" timestamp="1598802619344" />
+    <state x="552" y="239" key="Vcs.Push.Dialog.v2" timestamp="1598802449709">
+      <screen x="0" y="23" width="1920" height="1057" />
+    </state>
+    <state x="552" y="239" key="Vcs.Push.Dialog.v2/0.23.1920.1057@0.23.1920.1057" timestamp="1598802449709" />
+    <state x="612" y="324" width="852" height="486" key="find.popup" timestamp="1598806089154">
+      <screen x="0" y="23" width="1920" height="1057" />
     </state>
     <state x="612" y="308" width="852" height="486" key="find.popup/0.0.1920.1080@0.0.1920.1080" timestamp="1598772593000" />
+    <state x="612" y="324" width="852" height="486" key="find.popup/0.23.1920.1057@0.23.1920.1057" timestamp="1598806089154" />
+    <state x="728" y="297" key="git4idea.merge.GitMergeDialog" timestamp="1598777876603">
+      <screen x="0" y="23" width="1920" height="1057" />
+    </state>
+    <state x="728" y="297" key="git4idea.merge.GitMergeDialog/0.23.1920.1057@0.23.1920.1057" timestamp="1598777876603" />
+    <state x="742" y="351" key="git4idea.ui.GitTagDialog" timestamp="1598802620307">
+      <screen x="0" y="23" width="1920" height="1057" />
+    </state>
+    <state x="742" y="351" key="git4idea.ui.GitTagDialog/0.23.1920.1057@0.23.1920.1057" timestamp="1598802620307" />
+    <state x="744" y="386" key="zielu.gittoolbox.ui.GitPushTagsDialog" timestamp="1598802631083">
+      <screen x="0" y="23" width="1920" height="1057" />
+    </state>
+    <state x="744" y="386" key="zielu.gittoolbox.ui.GitPushTagsDialog/0.23.1920.1057@0.23.1920.1057" timestamp="1598802631083" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
