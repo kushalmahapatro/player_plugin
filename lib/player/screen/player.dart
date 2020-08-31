@@ -9,37 +9,39 @@ import 'package:player_plugin/subtitle/subtitle_text_view.dart';
 
 // ignore: must_be_immutable
 class Player extends StatefulWidget {
-  Sample sampleVideo;
   bool showBackButton;
   ValueChanged<bool> onPlayerMaximise;
   final VideoPlayerController controller;
-  ValueChanged<VideoPlayerController> onControllerInitialized;
   bool changingMedia;
   ValueChanged<bool> mediaChanged;
   ValueChanged<bool> videoCompleted;
   ValueChanged<int> lastPlaybackPosition;
+  ValueChanged<PlayerOrientation> playerBackClicked;
   bool showResumePopup;
   PlayerStyling playerStyling;
+  PlayerOrientation playerOrientation;
+  bool autoStart;
 
   Player({Key key,
-    this.sampleVideo,
     this.showBackButton,
     this.onPlayerMaximise,
     this.controller,
-    this.onControllerInitialized,
     this.changingMedia,
     this.lastPlaybackPosition,
     this.videoCompleted,
     this.mediaChanged,
+    this.playerBackClicked,
     this.playerStyling,
+    this.playerOrientation,
+    this.autoStart = true,
     this.showResumePopup = true})
       : super(key: key);
 
   @override
-  PlayerState createState() => PlayerState();
+  _PlayerState createState() => _PlayerState();
 }
 
-class PlayerState extends State<Player> {
+class _PlayerState extends State<Player> {
   VideoPlayerController controller;
   bool _isPlaying = false;
   bool _showController = false;
@@ -77,7 +79,7 @@ class PlayerState extends State<Player> {
       bufferedPosition = 0;
   Timer _controlTimer;
   Stopwatch _stopwatch;
-  int orientation = 1;
+  PlayerOrientation orientation;
   SubtitleController _subtitleController;
 
   hideControls() {
@@ -171,7 +173,7 @@ class PlayerState extends State<Player> {
       });
     }
     if (controller.value.isBuffering)
-      showControls(hide: false);
+      showControls;
   }
 
   @override
@@ -180,6 +182,9 @@ class PlayerState extends State<Player> {
     if (widget.changingMedia) {
       controller = null;
       _initialize();
+      setState(() {
+        bufferedPosition = 0;
+      });
     }
   }
 
@@ -207,22 +212,6 @@ class PlayerState extends State<Player> {
                   int bitrate = int.parse(val[1]);
                   resolutionValues
                       .add(ResolutionValues(width, height, bitrate, res[1]));
-                  // print(widget.sampleVideo.playedLength);
-                  if ((widget.sampleVideo.playedLength ?? 0) > 5000) {
-                    setState(() {
-                      if (widget.showResumePopup ?? false) {
-                        hideControls();
-                        showResumePopup = true;
-                      } else {
-                        playerPosition = widget.sampleVideo.playedLength;
-                        controller
-                            .seekTo(Duration(milliseconds: playerPosition));
-                      }
-                    });
-                  } else {
-                    playerPosition = widget.sampleVideo.playedLength ?? 0;
-                    controller.seekTo(Duration(milliseconds: 0));
-                  }
                 }
                 selectedResolution = resolutionValues[0];
               }
@@ -248,9 +237,28 @@ class PlayerState extends State<Player> {
                 type: subtitleValues[0].type);
             selectedSubtitle = subtitleValues[0];
           }
+          if ((widget.controller.mediaContent.playedLength ?? 0) > 5000) {
+            setState(() {
+              if (widget.showResumePopup ?? false) {
+                hideControls();
+                showResumePopup = true;
+              } else {
+                playerPosition = widget.controller.mediaContent.playedLength;
+                controller
+                    .seekTo(Duration(milliseconds: playerPosition));
+              }
+            });
+          } else {
+            playerPosition = widget.controller.mediaContent.playedLength ?? 0;
+            controller.seekTo(Duration(milliseconds: 0));
+          }
           controller.play();
-          controller.pause();
-          showControls(hide: false);
+          if(!widget.autoStart) {
+            controller.pause();
+            showControls(hide: false);
+          }else{
+            hideControls();
+          }
           actualRatio = controller.value.aspectRatio;
           aspectRatio = actualRatio;
           widget.mediaChanged(false);
@@ -265,9 +273,9 @@ class PlayerState extends State<Player> {
     showResumePopup = false;
     controller = widget.controller;
     selectedPlayback = new PlaybackValues("Normal", 1.00);
-    if (widget.sampleVideo.subtitles != null) {
-      for (int i = 0; i < widget.sampleVideo.subtitles.length; i++) {
-        subtitleValues.add(widget.sampleVideo.subtitles[i]);
+    if (widget.controller.mediaContent.subtitles != null) {
+      for (int i = 0; i < widget.controller.mediaContent.subtitles.length; i++) {
+        subtitleValues.add(widget.controller.mediaContent.subtitles[i]);
       }
     }
     _initialize();
@@ -275,6 +283,7 @@ class PlayerState extends State<Player> {
 
   @override
   Widget build(BuildContext context) {
+    orientation =  widget?.playerOrientation ?? PlayerOrientation.PORTRAIT;
     controller.addListener(_controllerListener);
     double volume;
     double screenWidth = MediaQuery
@@ -309,15 +318,7 @@ class PlayerState extends State<Player> {
     }
 
     Widget progressBar(val, buffered) {
-      if (val != null && val > 0.0 && val < 1.0) {
-        final int duration = controller.value.duration.inMilliseconds;
-        int maxBuffering = 0;
-        for (DurationRange range in controller.value.buffered) {
-          final int end = range.end.inMilliseconds;
-          if (end > maxBuffering) {
-            maxBuffering = end;
-          }
-        }
+      if (val != null && val >= 0.0 && val <= 1.0){
         return Stack(
           fit: StackFit.passthrough,
           children: <Widget>[
@@ -337,6 +338,7 @@ class PlayerState extends State<Player> {
                   thumbColor: Colors.transparent,
                   thumbShape: RoundSliderThumbShape(enabledThumbRadius: 0.0)),
             ),
+
             SliderTheme(
               child: Slider(
                 value: val,
@@ -391,7 +393,7 @@ class PlayerState extends State<Player> {
               thumbColor: widget?.playerStyling?.progressColors
                   ?.thumbColor ?? Colors.green,
               thumbShape: RoundSliderThumbShape(
-                  enabledThumbRadius: 0.0,)),
+                enabledThumbRadius: 0.0,)),
         );
       }
     }
@@ -613,9 +615,7 @@ class PlayerState extends State<Player> {
                       _settingModalBottomSheetPlayback(context);
                     },
                   ),
-                  if (selectedResolution != null &&
-                      !widget.sampleVideo.uri
-                          .contains("com.education.prepdesk"))
+                  if (selectedResolution != null)
                     InkWell(
                       child: Padding(
                         padding: EdgeInsets.only(
@@ -683,7 +683,7 @@ class PlayerState extends State<Player> {
 
     Widget videoPlayerControls() {
       double val = playerPosition.toDouble() / playerDuration.toDouble();
-      double buffered = (bufferedPosition.toDouble() + 10000) /
+      double buffered = (bufferedPosition.toDouble()) /
           playerDuration.toDouble();
       volume = controller.value.volume;
       return GestureDetector(
@@ -708,7 +708,7 @@ class PlayerState extends State<Player> {
                         Flexible(
                           child: Align(
                             child: Text(
-                              widget.sampleVideo.name,
+                              widget.controller.mediaContent.name,
                               overflow: TextOverflow.ellipsis,
                               maxLines: 2,
                               style: TextStyle(color: Colors.white),
@@ -787,10 +787,17 @@ class PlayerState extends State<Player> {
                                             },
                                             child: controller.value.isBuffering
                                                 ?
-                                            SizedBox(
-                                                height: 70,
-                                                width: 70,
-                                                child: CircularProgressIndicator())
+                                            Container(
+                                              height: 70,
+                                              child: Center(
+                                                child: SizedBox(
+                                                    height: 50,
+                                                    width: 50,
+                                                    child: CircularProgressIndicator(
+                                                      valueColor: AlwaysStoppedAnimation<Color>(widget?.playerStyling?.loaderConfig?.loaderColor ?? Colors.green),
+                                                    )),
+                                              ),
+                                            )
                                                 : Icon(
                                               controller.value.isPlaying
                                                   ? Icons.pause
@@ -907,22 +914,22 @@ class PlayerState extends State<Player> {
                               ),
                               InkWell(
                                   onTap: () {
-                                    if (orientation == 1) {
+                                    if (orientation == PlayerOrientation.PORTRAIT) {
                                       widget.onPlayerMaximise(true);
                                       setState(() {
-                                        orientation = 2;
+                                        orientation = PlayerOrientation.LANDSCAPE;
                                       });
                                     } else {
                                       widget.onPlayerMaximise(false);
                                       setState(() {
-                                        orientation = 1;
+                                        orientation = PlayerOrientation.PORTRAIT;
                                       });
                                     }
                                   },
                                   child: Padding(
                                       padding: EdgeInsets.only(left: 10.0),
                                       child: Icon(
-                                        orientation == 2
+                                        orientation == PlayerOrientation.LANDSCAPE
                                             ? Icons.fullscreen_exit
                                             : Icons.fullscreen,
                                         color: Colors.white,
@@ -939,7 +946,7 @@ class PlayerState extends State<Player> {
           }
         },
         onDoubleTap: () {
-          if (orientation != 1) if (aspectRatio == actualRatio) {
+          if (orientation != PlayerOrientation.PORTRAIT) if (aspectRatio == actualRatio) {
             setState(() {
               aspectRatio = fullScreenRatio;
             });
@@ -953,144 +960,136 @@ class PlayerState extends State<Player> {
     }
 
     return controller.value.initialized
-        ? AspectRatio(
-      aspectRatio: orientation == 1 ? 4 / 3 : screenWidth / screenHeight,
-      child: Stack(
-        fit: StackFit.expand,
-        children: <Widget>[
-          GestureDetector(
-            child: Container(
-                color: Colors.black,
-                child: Center(
-                  child: AspectRatio(
-                      aspectRatio: (aspectRatio ?? 4 / 3) > 0.0
-                          ? (aspectRatio ?? 4 / 3)
-                          : 4 / 3,
-                      child: VideoPlayer(controller)),
-                )),
-            onTap: () {
-              setState(() {
-                if (!_showController) {
-                  showControls();
-                }
-              });
-            },
-            onDoubleTap: () {
-              if (orientation != 1) if (aspectRatio == actualRatio) {
-                setState(() {
-                  aspectRatio = fullScreenRatio;
-                });
-              } else if (aspectRatio == fullScreenRatio) {
-                setState(() {
-                  aspectRatio = actualRatio;
-                });
-              }
-            },
-          ),
-//                controller.value.isBuffering
-//                    ? Center(
-//                    child: Row(
-//                      mainAxisAlignment: MainAxisAlignment.center,
-//                      crossAxisAlignment: CrossAxisAlignment.center,
-//                      children: <Widget>[
-//                        CircularProgressIndicator(),
-//                      ],
-//                    ))
-//                    : new Container(),
-          if (!showResumePopup && _showController) videoPlayerControls(),
-          if (_subtitleController != null)
-            Positioned(
-              bottom: 50,
-              left: 0,
-              right: 0,
-              child: SubtitleTextView(
-                subtitleController: _subtitleController,
-                videoPlayerController: controller,
-                subtitleStyle: SubtitleStyle(
-                    fontSize: 16,
-                    textColor: Colors.white,
-                    hasBorder: true),
-              ),
-            ),
-          if (showResumePopup)
-            Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
+        ? WillPopScope(
+        onWillPop: onBackPressed,
+        child:AspectRatio(
+          aspectRatio: orientation == PlayerOrientation.PORTRAIT ? 4 / 3 : screenWidth / screenHeight,
+          child: Stack(
+            fit: StackFit.expand,
+            children: <Widget>[
+              GestureDetector(
                 child: Container(
-                    color: Colors.black.withOpacity(0.8),
-                    padding: EdgeInsets.all(10),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Text(
-                          "Do you want to resume the playback where you left from?",
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        SizedBox(height: 10),
-                        Row(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.center,
+                    color: Colors.black,
+                    child: Center(
+                      child: AspectRatio(
+                          aspectRatio: (aspectRatio ?? 4 / 3) > 0.0
+                              ? (aspectRatio ?? 4 / 3)
+                              : 4 / 3,
+                          child: VideoPlayer(controller)),
+                    )),
+                onTap: () {
+                  setState(() {
+                    if (!_showController) {
+                      showControls();
+                    }
+                  });
+                },
+                onDoubleTap: () {
+                  if (orientation != PlayerOrientation.PORTRAIT) if (aspectRatio == actualRatio) {
+                    setState(() {
+                      aspectRatio = fullScreenRatio;
+                    });
+                  } else if (aspectRatio == fullScreenRatio) {
+                    setState(() {
+                      aspectRatio = actualRatio;
+                    });
+                  }
+                },
+              ),
+              if (!showResumePopup && _showController) videoPlayerControls(),
+              if (_subtitleController != null)
+                Positioned(
+                  bottom: 50,
+                  left: 0,
+                  right: 0,
+                  child: SubtitleTextView(
+                    subtitleController: _subtitleController,
+                    videoPlayerController: controller,
+                    subtitleStyle: SubtitleStyle(
+                        fontSize: 16,
+                        textColor: Colors.white,
+                        hasBorder: true),
+                  ),
+                ),
+              if (showResumePopup)
+                Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: Container(
+                        color: Colors.black.withOpacity(0.8),
+                        padding: EdgeInsets.all(10),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
-                            SizedBox(
-                              width: 20,
+                            Text(
+                              "Do you want to resume the playback where you left from?",
+                              style: TextStyle(color: Colors.white),
                             ),
-                            Flexible(
-                                flex: 1,
-                                child: InkWell(
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                        vertical: 10),
-                                    width: double.maxFinite,
-                                    color: Colors.red,
-                                    child: Center(child: Text("No")),
-                                  ),
-                                  onTap: () {
-                                    setState(() {
-                                      showResumePopup = false;
-                                      playerPosition = 0;
-                                      controller.seekTo(
-                                          Duration(milliseconds: 0));
-                                      showControls();
-                                      controller.play();
-                                    });
-                                  },
-                                )),
-                            SizedBox(
-                              width: 20,
-                            ),
-                            Flexible(
-                                flex: 1,
-                                child: InkWell(
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                        vertical: 10),
-                                    width: double.maxFinite,
-                                    color: Colors.white,
-                                    child: Center(child: Text("Yes")),
-                                  ),
-                                  onTap: () {
-                                    setState(() {
-                                      showResumePopup = false;
-                                      playerPosition =
-                                          widget.sampleVideo.playedLength;
-                                      controller.seekTo(Duration(
-                                          milliseconds: playerPosition));
-                                      showControls();
-                                      controller.play();
-                                    });
-                                  },
-                                )),
-                            SizedBox(
-                              width: 20,
-                            ),
+                            SizedBox(height: 10),
+                            Row(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                SizedBox(
+                                  width: 20,
+                                ),
+                                Flexible(
+                                    flex: 1,
+                                    child: InkWell(
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                            vertical: 10),
+                                        width: double.maxFinite,
+                                        color: Colors.red,
+                                        child: Center(child: Text("No")),
+                                      ),
+                                      onTap: () {
+                                        setState(() {
+                                          showResumePopup = false;
+                                          playerPosition = 0;
+                                          controller.seekTo(
+                                              Duration(milliseconds: 0));
+                                          showControls();
+                                          controller.play();
+                                        });
+                                      },
+                                    )),
+                                SizedBox(
+                                  width: 20,
+                                ),
+                                Flexible(
+                                    flex: 1,
+                                    child: InkWell(
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                            vertical: 10),
+                                        width: double.maxFinite,
+                                        color: Colors.white,
+                                        child: Center(child: Text("Yes")),
+                                      ),
+                                      onTap: () {
+                                        setState(() {
+                                          showResumePopup = false;
+                                          playerPosition =
+                                              widget.controller.mediaContent.playedLength;
+                                          controller.seekTo(Duration(
+                                              milliseconds: playerPosition));
+                                          showControls();
+                                          controller.play();
+                                        });
+                                      },
+                                    )),
+                                SizedBox(
+                                  width: 20,
+                                ),
+                              ],
+                            )
                           ],
-                        )
-                      ],
-                    ))),
-        ],
-      ),
-    )
+                        ))),
+            ],
+          ),
+        ))
         : AspectRatio(
       aspectRatio: 4 / 3,
       child: Container(
@@ -1102,11 +1101,13 @@ class PlayerState extends State<Player> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                CircularProgressIndicator(),
+                CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(widget?.playerStyling?.loaderConfig?.loaderColor ?? Colors.green),
+                ),
                 Padding(
                     padding: EdgeInsets.only(left: 10.0),
                     child: Text(
-                      "Loading...",
+                      widget?.playerStyling?.loaderConfig?.loadingText ??"Loading...",
                       style: TextStyle(color: Colors.white, fontSize: 20.0),
                     ))
               ],
@@ -1143,27 +1144,15 @@ class PlayerState extends State<Player> {
   }
 
   Future<bool> onBackPressed() {
-    if (orientation == 1) {
-      Sample sample = new Sample(
-          name: widget.sampleVideo.name,
-          ad_tag_uri: widget.sampleVideo.ad_tag_uri,
-          drm_license_url: widget.sampleVideo.drm_license_url,
-          drm_scheme: widget.sampleVideo.drm_scheme,
-          extension: widget.sampleVideo.extension,
-          playedLength: playerPosition,
-          playlist: widget.sampleVideo.playlist,
-          spherical_stereo_mode: widget.sampleVideo.spherical_stereo_mode,
-          uri: widget.sampleVideo.uri);
-      Navigator.pop(context, sample);
+    if (orientation == PlayerOrientation.PORTRAIT) {
       if (_timer != null) _timer.cancel();
       if (_controlTimer != null) _controlTimer.cancel();
       _stopwatch.stop();
+      widget.playerBackClicked(orientation);
     } else {
       widget.onPlayerMaximise(false);
       setState(() {
-        setState(() {
-          orientation = 1;
-        });
+        orientation = PlayerOrientation.PORTRAIT;
       });
     }
     return Future.value(false);
@@ -1201,83 +1190,6 @@ class SubtitleValues {
   SubtitleValues(this.url, this.name, this.type);
 }
 
-class Sample {
-  final String name;
-  final String uri;
-  final String extension;
-  final String drm_scheme;
-  final String drm_license_url;
-  final String ad_tag_uri;
-  final List<String> playlist;
-  final List<SubtitleValues> subtitles;
-  final String spherical_stereo_mode;
-  final int playedLength;
-  final String key;
-  final String keyId;
-
-  factory Sample.fromJson(Map<String, dynamic> parsedJson) {
-    List<String> playlistfiles = null;
-    List<SubtitleValues> subtitlesFiles = null;
-    if (parsedJson['playlist'] != null) {
-      playlistfiles = parsePlayLists(parsedJson['playlist']);
-    }
-
-    if (parsedJson['subtitles'] != null) {
-      subtitlesFiles = parseSubtitles(parsedJson['subtitles']);
-    }
-
-    return Sample(
-        name: parsedJson['name'],
-        uri: parsedJson['uri'],
-        extension: parsedJson['extension'],
-        drm_scheme: parsedJson['drm_scheme'],
-        drm_license_url: parsedJson['drm_license_url'],
-        ad_tag_uri: parsedJson['ad_tag_uri'],
-        spherical_stereo_mode: parsedJson['spherical_stereo_mode'],
-        playlist: playlistfiles,
-        subtitles: subtitlesFiles,
-        playedLength: 0,
-        key: parsedJson['key'],
-        keyId: parsedJson['keyId']);
-  }
-
-  static List<Sample> parseSampleLists(parsedresponseBody) {
-    return parsedresponseBody
-        .map<Sample>((json) => Sample.fromJson(json))
-        .toList();
-  }
-
-  Sample({@required this.name,
-    @required this.uri,
-    this.extension = "",
-    this.drm_scheme = 'widevine',
-    this.drm_license_url = "",
-    this.ad_tag_uri = "",
-    this.spherical_stereo_mode = "",
-    this.playlist = const [""],
-    this.subtitles,
-    this.playedLength = 0,
-    this.key,
-    this.keyId});
-
-  @override
-  String toString() {
-    return 'Video Name :$name \n'
-        'Video Link :$uri \n'
-        'Playlist :${playlist == null ? null : playlist.toString()}';
-  }
-
-  static List<String> parsePlayLists(parsedresponseBody) {
-    return parsedresponseBody
-        .map<String>((json) => playListfromJson(json))
-        .toList();
-  }
-
-  static List<SubtitleValues> parseSubtitles(body) {
-    return body.map<SubtitleValues>((value) => value).toList();
-  }
-
-  static String playListfromJson(json) {
-    return json['uri'];
-  }
+enum PlayerOrientation{
+  PORTRAIT, LANDSCAPE
 }

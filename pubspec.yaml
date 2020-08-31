@@ -1,7 +1,7 @@
 name: player_plugin
 description: A new Flutter plugin for video
-version: 0.0.1
-homepage: "https:"
+version: 0.0.3+1
+homepage: "https://kushalm.xyz"
 
 environment:
   sdk: ">=2.3.0 <3.0.0"
@@ -11,6 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   http: ^0.12.2
+  hex: ^0.1.2
 
 dev_dependencies:
   flutter_test:

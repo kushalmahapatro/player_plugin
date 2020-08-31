@@ -392,7 +392,7 @@ public class PlayerPlugin implements MethodCallHandler {
 //                    Integer.parseInt((ResolutionChange.get(0).split(" X ")[0]).replace("p", ""))));
                                 break;
                             case C.TRACK_TYPE_TEXT:
-                                ArrayList<String> vtt = new ArrayList<>();
+                                /*ArrayList<String> vtt = new ArrayList<>();
                                 String nameVTT = "DEFAULT", codeVTT = "def";
                                 for (int j = 0; j < trackGroups.length; j++) {
                                     TrackGroup group = trackGroups.get(j);
@@ -414,7 +414,7 @@ public class PlayerPlugin implements MethodCallHandler {
                                 SubtitleNew = new ArrayList<String>(new LinkedHashSet<String>(vtt));
                                 if (SubtitleNew.size() > 0)
                                     trackSelector.setParameters(
-                                            trackSelector.buildUponParameters().setPreferredTextLanguage(SubtitleNew.get(0).split(":")[1]));
+                                            trackSelector.buildUponParameters().setPreferredTextLanguage(SubtitleNew.get(0).split(":")[1]));*/
 
                                 break;
                             default:
@@ -423,7 +423,7 @@ public class PlayerPlugin implements MethodCallHandler {
                     }
                 }
             }
-            sendInitialized(AudioNew, ResolutionChange, SubtitleNew);
+            sendInitialized(AudioNew, ResolutionChange /*SubtitleNew*/);
         }
 
         private void startBuffering(){
@@ -517,7 +517,7 @@ public class PlayerPlugin implements MethodCallHandler {
         }
 
         @SuppressWarnings("SuspiciousNameCombination")
-        private void sendInitialized(ArrayList<String> audios, ArrayList<String> resolutions, ArrayList<String> subtitles) {
+        private void sendInitialized(ArrayList<String> audios, ArrayList<String> resolutions/*, ArrayList<String> subtitles*/) {
             if (isInitialized) {
                 Map<String, Object> event = new HashMap<>();
                 event.put("event", "initialized");
@@ -538,7 +538,7 @@ public class PlayerPlugin implements MethodCallHandler {
                 }
                 setEvent(audios, "audios", event);
                 setEvent(resolutions, "resolutions", event);
-                setEvent(subtitles, "subtitles", event);
+//                setEvent(subtitles, "subtitles", event);
                 eventSink.success(event);
 
                 event.put("event", "autoFormat");
@@ -649,13 +649,13 @@ public class PlayerPlugin implements MethodCallHandler {
                         MediaContent mediaContent = new MediaContent(call.argument("name").toString(),
                                 call.argument("uri").toString(), call.argument("extension").toString(),
                                 call.argument("drm_scheme").toString(), call.argument("drm_license_url").toString(),
-                                call.argument("ad_tag_uri").toString(), null, call.argument("spherical_stereo_mode").toString(),
-                                (List<String>) call.argument("subtitlesLink"), call.argument("localMediaDRMCallbackKey").toString());
+                                call.argument("ad_tag_uri").toString(), null, call.argument("spherical_stereo_mode").toString()
+                               /*, (List<String>) call.argument("subtitlesLink")*/, call.argument("localMediaDRMCallbackKey").toString());
                         player = new VideoPlayer(registrar.context(), eventChannel, handle, mediaContent, result);
                     } else {
                         player = new VideoPlayer(registrar.context(), eventChannel, handle,
-                                new MediaContent(null, call.argument("uri").toString(), null, null, null, null, null, null,
-                                        (List<String>) call.argument("subtitlesLink"), ""),
+                                new MediaContent(null, call.argument("uri").toString(), null, null, null, null, null, null
+                                        /*, (List<String>) call.argument("subtitlesLink")*/, ""),
                                 result);
                     }
                     videoPlayers.put(handle.id(), player);

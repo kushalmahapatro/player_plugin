@@ -4,7 +4,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:player_plugin/player/model/secured_video_content.dart';
+import 'package:hex/hex.dart';
+import 'package:player_plugin/player/model/secured_player_content.dart';
 
 
 class PlayerPlugin {
@@ -43,7 +44,6 @@ class VideoPlayerValue {
       this.speed = 1,
       this.resolutions = const <String>[],
       this.audios = const <String>[],
-      this.subtitles = const <String>[],
       this.errorDescription,
       this.autoFormat});
 
@@ -79,7 +79,6 @@ class VideoPlayerValue {
 
   final List<dynamic> resolutions;
   final List<dynamic> audios;
-  final List<dynamic> subtitles;
   final String autoFormat;
 
   /// A description of the error if present.
@@ -102,7 +101,6 @@ class VideoPlayerValue {
       {Duration duration,
       List<dynamic> resolutions,
       List<dynamic> audios,
-      List<dynamic> subtitles,
       Size size,
       Duration position,
       List<DurationRange> buffered,
@@ -125,7 +123,6 @@ class VideoPlayerValue {
       speed: speed ?? this.speed,
       resolutions: resolutions ?? this.resolutions,
       audios: audios ?? this.audios,
-      subtitles: subtitles ?? this.subtitles,
       errorDescription: errorDescription ?? this.errorDescription,
       autoFormat: autoFormat ?? this.autoFormat,
     );
@@ -145,7 +142,6 @@ class VideoPlayerValue {
         'speed: $speed, '
         'resolutions: [${resolutions.join(', ')}], '
         'audios: [${audios.join(', ')}], '
-        'subtitles: [${subtitles.join(', ')}], '
         'errorDescription: $errorDescription,'
         'autoFormat: $autoFormat)';
   }
@@ -193,7 +189,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
   int _textureId;
   String dataSource;
-  MediaContent mediaContent;
+  PlayerContent mediaContent;
 
   /// Describes the type of data source this [VideoPlayerController]
   /// is constructed with.
@@ -231,8 +227,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           'drm_license_url': mediaContent.drm_license_url,
           'ad_tag_uri': mediaContent.ad_tag_uri,
           'spherical_stereo_mode': mediaContent.spherical_stereo_mode,
-          "subtitlesLink": mediaContent.subtitles,
-          "localMediaDRMCallbackKey": mediaContent.localMediaDRMCallbackKey,
+          "localMediaDRMCallbackKey": getEncodedKey(mediaContent.localMediaDRMCallbackKey.key, mediaContent.localMediaDRMCallbackKey.keyId),
         };
         break;
       case DataSourceType.network:
@@ -254,8 +249,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           'drm_license_url': mediaContent.drm_license_url,
           'ad_tag_uri': mediaContent.ad_tag_uri,
           'spherical_stereo_mode': mediaContent.spherical_stereo_mode,
-          "subtitlesLink": mediaContent.subtitles,
-          "localMediaDRMCallbackKey": mediaContent.localMediaDRMCallbackKey,
+          "localMediaDRMCallbackKey": getEncodedKey(mediaContent.localMediaDRMCallbackKey.key, mediaContent.localMediaDRMCallbackKey.keyId),
         };
         break;
     }
@@ -286,7 +280,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
             size: Size(map['width']?.toDouble() ?? 0.0,
                 map['height']?.toDouble() ?? 0.0),
             resolutions: jsonDecode(map['resolutions']),
-            subtitles: jsonDecode(map['subtitles']),
             audios: jsonDecode(map['audios']),
           );
           initializingCompleter.complete(null);
@@ -514,6 +507,21 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   Future<void> setAudio(String code) async {
     await _applyAudio(code);
   }
+
+  getEncodedKey(String key, String keyId) {
+    List<int> hexKey = HEX.decode(key);
+    List<int> hexKeyId = HEX.decode(keyId);
+    String encodedKey = (base64.encode(hexKey)).replaceAll("=", "");
+    String encodedKeyId = (base64.encode(hexKeyId)).replaceAll("=", "");
+    Map<String, dynamic> key1 = {
+      'keys': [
+        {'k': encodedKey, 'kty': 'oct', 'kid': encodedKeyId}
+      ],
+      'type': 'temporary'
+    };
+    print(jsonEncode(key1));
+    return jsonEncode(key1).toString();
+  }
 }
 
 class _VideoAppLifeCycleObserver extends Object with WidgetsBindingObserver {
@@ -600,268 +608,4 @@ class _VideoPlayerState extends State<VideoPlayer> {
   }
 }
 
-class VideoProgressColors {
-  VideoProgressColors({
-    this.playedColor = const Color.fromRGBO(255, 0, 0, 0.7),
-    this.bufferedColor = const Color.fromRGBO(50, 50, 200, 0.2),
-    this.backgroundColor = const Color.fromRGBO(200, 200, 200, 0.5),
-  });
 
-  final Color playedColor;
-  final Color bufferedColor;
-  final Color backgroundColor;
-}
-
-class _VideoScrubber extends StatefulWidget {
-  _VideoScrubber({
-    @required this.child,
-    @required this.controller,
-  });
-
-  final Widget child;
-  final VideoPlayerController controller;
-
-  @override
-  _VideoScrubberState createState() => _VideoScrubberState();
-}
-
-class _VideoScrubberState extends State<_VideoScrubber> {
-  bool _controllerWasPlaying = false;
-
-  VideoPlayerController get controller => widget.controller;
-
-  @override
-  Widget build(BuildContext context) {
-    void seekToRelativePosition(Offset globalPosition) {
-      final RenderBox box = context.findRenderObject();
-      final Offset tapPos = box.globalToLocal(globalPosition);
-      final double relative = tapPos.dx / box.size.width;
-      final Duration position = controller.value.duration * relative;
-      controller.seekTo(position);
-    }
-
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      child: widget.child,
-      onHorizontalDragStart: (DragStartDetails details) {
-        if (!controller.value.initialized) {
-          return;
-        }
-        _controllerWasPlaying = controller.value.isPlaying;
-        if (_controllerWasPlaying) {
-          controller.pause();
-        }
-      },
-      onHorizontalDragUpdate: (DragUpdateDetails details) {
-        if (!controller.value.initialized) {
-          return;
-        }
-        seekToRelativePosition(details.globalPosition);
-      },
-      onHorizontalDragEnd: (DragEndDetails details) {
-        if (_controllerWasPlaying) {
-          controller.play();
-        }
-      },
-      onTapDown: (TapDownDetails details) {
-        if (!controller.value.initialized) {
-          return;
-        }
-        seekToRelativePosition(details.globalPosition);
-      },
-    );
-  }
-}
-
-
-/// Displays the play/buffering status of the video controlled by [controller].
-///
-/// If [allowScrubbing] is true, this widget will detect taps and drags and
-/// seek the video accordingly.
-///
-/// [padding] allows to specify some extra padding around the progress indicator
-/// that will also detect the gestures.
-class VideoProgressIndicator extends StatefulWidget {
-  /// Construct an instance that displays the play/buffering status of the video
-  /// controlled by [controller].
-  ///
-  /// Defaults will be used for everything except [controller] if they're not
-  /// provided. [allowScrubbing] defaults to false, and [padding] will default
-  /// to `top: 5.0`.
-  VideoProgressIndicator(
-      this.controller, {
-        VideoProgressColors colors,
-        this.allowScrubbing,
-        this.padding = const EdgeInsets.only(top: 5.0),
-      }) : colors = colors ?? VideoProgressColors();
-
-  /// The [VideoPlayerController] that actually associates a video with this
-  /// widget.
-  final VideoPlayerController controller;
-
-  /// The default colors used throughout the indicator.
-  ///
-  /// See [VideoProgressColors] for default values.
-  final VideoProgressColors colors;
-
-  /// When true, the widget will detect touch input and try to seek the video
-  /// accordingly. The widget ignores such input when false.
-  ///
-  /// Defaults to false.
-  final bool allowScrubbing;
-
-  /// This allows for visual padding around the progress indicator that can
-  /// still detect gestures via [allowScrubbing].
-  ///
-  /// Defaults to `top: 5.0`.
-  final EdgeInsets padding;
-
-  @override
-  _VideoProgressIndicatorState createState() => _VideoProgressIndicatorState();
-}
-
-class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
-  _VideoProgressIndicatorState() {
-    listener = () {
-      if (!mounted) {
-        return;
-      }
-      setState(() {});
-    };
-  }
-
-  VoidCallback listener;
-
-  VideoPlayerController get controller => widget.controller;
-
-  VideoProgressColors get colors => widget.colors;
-
-  @override
-  void initState() {
-    super.initState();
-    controller.addListener(listener);
-  }
-
-  @override
-  void deactivate() {
-    controller.removeListener(listener);
-    super.deactivate();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    Widget progressIndicator;
-    if (controller.value.initialized) {
-      final int duration = controller.value.duration.inMilliseconds;
-      final int position = controller.value.position.inMilliseconds;
-
-      int maxBuffering = 0;
-      for (DurationRange range in controller.value.buffered) {
-        final int end = range.end.inMilliseconds;
-        if (end > maxBuffering) {
-          maxBuffering = end;
-        }
-      }
-
-      progressIndicator = Stack(
-        fit: StackFit.passthrough,
-        children: <Widget>[
-          LinearProgressIndicator(
-            value: maxBuffering / duration,
-            valueColor: AlwaysStoppedAnimation<Color>(colors.bufferedColor),
-            backgroundColor: colors.backgroundColor,
-          ),
-          LinearProgressIndicator(
-            value: position / duration,
-            valueColor: AlwaysStoppedAnimation<Color>(colors.playedColor),
-            backgroundColor: Colors.transparent,
-          ),
-        ],
-      );
-    } else {
-      progressIndicator = LinearProgressIndicator(
-        value: null,
-        valueColor: AlwaysStoppedAnimation<Color>(colors.playedColor),
-        backgroundColor: colors.backgroundColor,
-      );
-    }
-    final Widget paddedProgressIndicator = Padding(
-      padding: widget.padding,
-      child: progressIndicator,
-    );
-    if (widget.allowScrubbing) {
-      return _VideoScrubber(
-        child: paddedProgressIndicator,
-        controller: controller,
-      );
-    } else {
-      return paddedProgressIndicator;
-    }
-  }
-}
-
-/// Widget for displaying closed captions on top of a video.
-///
-/// If [text] is null, this widget will not display anything.
-///
-/// If [textStyle] is supplied, it will be used to style the text in the closed
-/// caption.
-///
-/// Note: in order to have closed captions, you need to specify a
-/// [VideoPlayerController.closedCaptionFile].
-///
-/// Usage:
-///
-/// ```dart
-/// Stack(children: <Widget>[
-///   VideoPlayer(_controller),
-///   ClosedCaption(text: _controller.value.caption.text),
-/// ]),
-/// ```
-class ClosedCaption extends StatelessWidget {
-  /// Creates a a new closed caption, designed to be used with
-  /// [VideoPlayerValue.caption].
-  ///
-  /// If [text] is null, nothing will be displayed.
-  const ClosedCaption({Key key, this.text, this.textStyle}) : super(key: key);
-
-  /// The text that will be shown in the closed caption, or null if no caption
-  /// should be shown.
-  final String text;
-
-  /// Specifies how the text in the closed caption should look.
-  ///
-  /// If null, defaults to [DefaultTextStyle.of(context).style] with size 36
-  /// font colored white.
-  final TextStyle textStyle;
-
-  @override
-  Widget build(BuildContext context) {
-    final TextStyle effectiveTextStyle = textStyle ??
-        DefaultTextStyle.of(context).style.copyWith(
-          fontSize: 36.0,
-          color: Colors.white,
-        );
-
-    if (text == null) {
-      return SizedBox.shrink();
-    }
-
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: Padding(
-        padding: EdgeInsets.only(bottom: 24.0),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: Color(0xB8000000),
-            borderRadius: BorderRadius.circular(2.0),
-          ),
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 2.0),
-            child: Text(text, style: effectiveTextStyle),
-          ),
-        ),
-      ),
-    );
-  }
-}
