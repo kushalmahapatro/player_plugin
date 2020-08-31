@@ -1,3 +1,7 @@
+## [0.0.3+2]
+
+- Buffing loader added for the PLayer Plugin.
+
 ## [0.0.3+1]
 
 - Auto start boolean added to Player Plugin
